@@ -1,0 +1,35 @@
+#!/bin/sh
+
+display_help() {
+    echo
+    echo "Usage: count-todo [Path]"
+    echo
+}
+
+if [[ "$1" == "-h" ]]; then
+  display_help
+  exit 0
+fi
+
+validate_path() {
+    if [[ -z "$1" ]]; then
+        display_help
+        echo "Error: Path is required"
+        exit 1
+    fi
+
+    # Validate that the path exists
+    if [[ ! -e "$1" ]]; then
+        display_help
+        echo "Error: Path '$1' not found"
+        exit 1
+    fi
+}
+
+path=$1
+validate_path "$path"
+
+grep -Rio "^\s*\(\#\|\/\/\|\-\-\|\*\)\?\s*TODO\:\?.*" $path --include \*.py
+grep -Rio "^\s*\(\/\/\|\*\)\?\s*TODO\:\?.*" $path --include \*.js --include \*.ts  --include \*.jsx  --include \*.tsx --include \*.vue
+grep -Rio "^\s*\#\?\s*TODO\:\?.*" $path --include \*.py
+grep -Rio "^\s*\(\#\|\-\-\|\*\)\?\s*TODO\:\?.*" $path --include \*.sql

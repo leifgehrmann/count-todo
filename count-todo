@@ -29,7 +29,6 @@ validate_path() {
 path=$1
 validate_path "$path"
 
-grep -Rio "^\s*\(\#\|\/\/\|\-\-\|\*\)\?\s*TODO\:\?.*" $path --include \*.py
-grep -Rio "^\s*\(\/\/\|\*\)\?\s*TODO\:\?.*" $path --include \*.js --include \*.ts  --include \*.jsx  --include \*.tsx --include \*.vue
-grep -Rio "^\s*\#\?\s*TODO\:\?.*" $path --include \*.py
-grep -Rio "^\s*\(\#\|\-\-\|\*\)\?\s*TODO\:\?.*" $path --include \*.sql
+git grep -rio -e "^\s*\(\/\/\|\*\)\?\s*TODO\:\?.*" -- "$path/*.js" "$path/*.ts" "$path/*.jsx" "$path/*.tsx" "$path/*.vue"
+git grep -rio -e "^\s*\#\?\s*TODO\:\?.*" -- "$path/*.py"
+git grep -rio -e "^\s*\(\#\|\-\-\|\*\)\?\s*TODO\:\?.*" -- "$path/*.sql"

@@ -1,0 +1,19 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run tests
+        run: |
+          make tests | tee ./test-output/summary.txt
+          grep -q "All tests passed." "./test-output/summary.txt" || exit 1

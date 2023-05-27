@@ -21,9 +21,9 @@ Usage: count-todo [-d <path>] [-lctoa]
 
 Options:
   -d <path> Search a specific directory.
-  -l        Include complete list of comments output.
+  -l        Include complete list of comments in output.
   -c        Include commit hash in output.
-  -t        Include commit datetime in output.
+  -t        Include commit date-time in output.
   -o        Omit total count in output.
   -a        Search through all commits in the git log.
 ```

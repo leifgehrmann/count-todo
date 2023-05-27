@@ -34,9 +34,9 @@ while getopts ":d:lctoa" arg; do
       echo
       echo "Options:"
       echo "  -d <path> Search a specific directory."
-      echo "  -l        Include complete list of comments output."
+      echo "  -l        Include complete list of comments in output."
       echo "  -c        Include commit hash in output."
-      echo "  -t        Include commit datetime in output."
+      echo "  -t        Include commit date-time in output."
       echo "  -o        Omit total count in output."
       echo "  -a        Search through all commits in the git log."
       exit 1

@@ -30,7 +30,7 @@ test-extras:
 	grep "[0-9a-f]\+,[^,]\+[^,]$$" test-output/extras.txt || (echo "Test Failed: Expected commit hash, timestamp" && exit 1)
 
 test-all:
-	mkdir -p test-all
+	mkdir -p test-output
 	rm -rf test-output/all.txt
 	./count-todo -ctal -d ./test > test-output/all.txt
 	grep "[0-9a-f]\+,[^,]\+,0" test-output/all.txt || (echo "Test Failed: Expected commit hash, timestamp, and count (0)" && exit 1)

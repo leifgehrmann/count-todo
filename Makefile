@@ -1,5 +1,5 @@
 install:
-	ln -s `pwd`/count-todo /usr/local/bin/count-todo
+	ln -s "`pwd`/count-todo" /usr/local/bin/count-todo
 
 uninstall:
 	rm /usr/local/bin/count-todo

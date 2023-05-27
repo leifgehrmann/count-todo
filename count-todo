@@ -1,34 +1,125 @@
 #!/bin/sh
 
-display_help() {
-    echo
-    echo "Usage: count-todo [Path]"
-    echo
-}
+dir="."
+all_commits=0
+list_comments=0
+include_commit=0
+include_time=0
+omit_count=0
 
-if [[ "$1" == "-h" ]]; then
-  display_help
-  exit 0
-fi
+while getopts ":d:lctoa" arg; do
+  case ${arg} in
+    d)
+      dir="$OPTARG"
+      ;;
+    l)
+      list_comments=1
+      ;;
+    c)
+      include_commit=1
+      ;;
+    t)
+      include_time=1
+      ;;
+    o)
+      omit_count=1
+      ;;
+    a)
+      all_commits=1
+      ;;
+    ?)
+      echo "Count the number of TODO, FIXME, and BUG comments in a git repository."
+      echo
+      echo "Usage: count-todo [-d <path>] [-lctoa]"
+      echo
+      echo "Options:"
+      echo "  -d <path> Search a specific directory."
+      echo "  -l        Include complete list of comments output."
+      echo "  -c        Include commit hash in output."
+      echo "  -t        Include commit datetime in output."
+      echo "  -o        Omit total count in output."
+      echo "  -a        Search through all commits in the git log."
+      exit 1
+      ;;
+  esac
+done
 
 validate_path() {
-    if [[ -z "$1" ]]; then
-        display_help
-        echo "Error: Path is required"
+    # Validate that the dir exists
+    if [[ ! -e "$1" ]]; then
+        echo "fatal: $1: No such file or directory"
         exit 1
     fi
 
-    # Validate that the path exists
-    if [[ ! -e "$1" ]]; then
-        display_help
-        echo "Error: Path '$1' not found"
+    # Validate that the path is a dir
+    if [[ ! -d "$1" ]]; then
+        echo "fatal: $1: Not a directory"
         exit 1
     fi
 }
 
-path=$1
-validate_path "$path"
+validate_path "$dir"
 
-git grep -rio -e "^\s*\(\/\/\|\*\)\?\s*TODO\:\?.*" -- "$path/*.js" "$path/*.ts" "$path/*.jsx" "$path/*.tsx" "$path/*.vue"
-git grep -rio -e "^\s*\#\?\s*TODO\:\?.*" -- "$path/*.py"
-git grep -rio -e "^\s*\(\#\|\-\-\|\*\)\?\s*TODO\:\?.*" -- "$path/*.sql"
+print_results() {
+    matches="$1"
+    commit_hash="$2"
+    commit_datetime="$3"
+
+    line=""
+
+    # Append the commit hash to the line if applicable
+    if [ "$include_commit" -eq "1" ]; then
+        line="$commit_hash"
+    fi
+
+    # Append the commit datetime to the line if applicable
+    if [ "$include_time" -eq "1" ]; then
+        if [[ -n "$line" ]]; then
+            line="$line,$commit_datetime"
+        else
+            line="$commit_datetime"
+        fi
+    fi
+
+    # Append the count to the line if applicable (true by default)
+    if [ "$omit_count" -eq "0" ]; then
+        count=0
+        if [[ -n "$matches" ]]; then
+            count=`echo "$matches" | wc -l | tr -d ' '`
+        fi
+        if [[ -n "$line" ]]; then
+            line="$line,$count"
+        else
+            line="$count"
+        fi
+    fi
+
+    # Output a comma-separated list of values
+    if [[ -n "$line" ]]; then
+        echo "$line"
+    fi
+
+    if [ "$list_comments" -eq "1" ]; then
+        if [[ -n "$matches" ]]; then
+            echo "$matches"
+        fi
+    fi
+}
+
+pattern="\(^\s*\|<!\-\-\|\-\-\|\*\|\#\|\/\/\|\*\)\s*\(TODO\|FIXME\|BUG\)\(\s\|\:\|,\).*"
+
+if [ "$all_commits" -eq "0" ]; then
+    # Perform a search only on the current commit.
+    matches=`cd "$dir" && git grep --color=always --recursive --ignore-case -e $pattern --`
+    commit_hash=`cd "$dir" && git rev-parse HEAD`
+    commit_datetime=`cd "$dir" && git show -s --format=%ci`
+    print_results "$matches" "$commit_hash" "$commit_datetime"
+else
+    # Perform a search for all commits.
+    for commit_hash in $(cd "$dir" && git rev-list --all)
+    do
+        matches=`cd "$dir" && git grep --color=always --recursive --ignore-case -e $pattern $commit_hash`
+        commit_datetime=`cd "$dir" && git show -s --format=%ci $commit_hash`
+        print_results "$matches" "$commit_hash" "$commit_datetime"
+    done
+fi

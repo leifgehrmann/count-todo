@@ -33,6 +33,7 @@ test-all:
 	mkdir -p test-output
 	rm -rf test-output/all.txt
 	./count-todo -ctal -d ./test > test-output/all.txt
+	cat test-output/all.txt
 	grep "[0-9a-f]\+,[^,]\+,0" test-output/all.txt || (echo "Test Failed: Expected commit hash, timestamp, and count (0)" && exit 1)
 	grep "[0-9a-f]\+,[^,]\+,9" test-output/all.txt || (echo "Test Failed: Expected commit hash, timestamp, and count (9)" && exit 1)
 	grep "[0-9a-f]\+:example.ts" test-output/all.txt || (echo "Test Failed: Expected commit hash in front of filename" && exit 1)

@@ -45,14 +45,8 @@ while getopts ":d:lctoa" arg; do
 done
 
 validate_path() {
-    # Validate that the dir exists
-    if [[ ! -e "$1" ]]; then
-        echo "fatal: $1: No such file or directory"
-        exit 1
-    fi
-
     # Validate that the path is a dir
-    if [[ ! -d "$1" ]]; then
+    if [ ! -d "$1" ]; then
         echo "fatal: $1: Not a directory"
         exit 1
     fi
@@ -74,7 +68,7 @@ print_results() {
 
     # Append the commit datetime to the line if applicable
     if [ "$include_time" -eq "1" ]; then
-        if [[ -n "$line" ]]; then
+        if [ -n "$line" ]; then
             line="$line,$commit_datetime"
         else
             line="$commit_datetime"
@@ -84,10 +78,10 @@ print_results() {
     # Append the count to the line if applicable (true by default)
     if [ "$omit_count" -eq "0" ]; then
         count=0
-        if [[ -n "$matches" ]]; then
+        if [ -n "$matches" ]; then
             count=`echo "$matches" | wc -l | tr -d ' '`
         fi
-        if [[ -n "$line" ]]; then
+        if [ -n "$line" ]; then
             line="$line,$count"
         else
             line="$count"
@@ -95,12 +89,12 @@ print_results() {
     fi
 
     # Output a comma-separated list of values
-    if [[ -n "$line" ]]; then
+    if [ -n "$line" ]; then
         echo "$line"
     fi
 
     if [ "$list_comments" -eq "1" ]; then
-        if [[ -n "$matches" ]]; then
+        if [ -n "$matches" ]; then
             echo "$matches"
         fi
     fi

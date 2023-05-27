@@ -13,7 +13,9 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # The tests assume all commits are available
       - name: Run tests
         run: |
-          make tests | tee ./test-output/summary.txt
-          grep -q "All tests passed." "./test-output/summary.txt" || exit 1
+          make tests | tee .tests-summary.txt
+          grep "All tests passed." .tests-summary.txt || exit 1

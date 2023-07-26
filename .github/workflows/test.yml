@@ -4,8 +4,6 @@ on:
   push:
   pull_request:
 
-# Testing that the tests still pass... They seem to with git version 2.37.1 (Apple Git-137.1), but not with git version 2.39.2 (Apple Git-143)
-
 jobs:
   build:
     runs-on: ${{matrix.os}}

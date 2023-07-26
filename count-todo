@@ -100,11 +100,11 @@ print_results() {
     fi
 }
 
-pattern="\(^\s*\|<!\-\-\|\-\-\|\*\|\#\|\/\/\|\*\)\s*\(TODO\|FIXME\|BUG\)\(\s\|\:\|,\).*"
+pattern="(^[ \t]*|^[ \t]*\*|<!--|--|\*|#|//|/\*)[ \t]*(TODO|FIXME|BUG)([ \t]|:|,).*"
 
 if [ "$all_commits" -eq "0" ]; then
     # Perform a search only on the current commit.
-    matches=`cd "$dir" && git grep --color=always --recursive --ignore-case -e $pattern --`
+    matches=`cd "$dir" && git grep --color=always --recursive --ignore-case -E "$pattern" --`
     commit_hash=`cd "$dir" && git rev-parse HEAD`
     commit_datetime=`cd "$dir" && git show -s --format=%ci`
     print_results "$matches" "$commit_hash" "$commit_datetime"
@@ -112,7 +112,7 @@ else
     # Perform a search for all commits.
     for commit_hash in $(cd "$dir" && git rev-list --all)
     do
-        matches=`cd "$dir" && git grep --color=always --recursive --ignore-case -e $pattern $commit_hash`
+        matches=`cd "$dir" && git grep --color=always --recursive --ignore-case -E "$pattern" $commit_hash`
         commit_datetime=`cd "$dir" && git show -s --format=%ci $commit_hash`
         print_results "$matches" "$commit_hash" "$commit_datetime"
     done

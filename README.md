@@ -25,7 +25,7 @@ Options:
   -c        Include commit hash in output.
   -t        Include commit date-time in output.
   -o        Omit total count in output.
-  -a        Search through all commits in the git log.
+  -a        Iterate through all commits in the current branch.
 ```
 
 ## Examples

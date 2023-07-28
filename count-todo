@@ -38,7 +38,7 @@ while getopts ":d:lctoa" arg; do
       echo "  -c        Include commit hash in output."
       echo "  -t        Include commit date-time in output."
       echo "  -o        Omit total count in output."
-      echo "  -a        Search through all commits in the git log."
+      echo "  -a        Iterate through all commits in the current branch."
       exit 1
       ;;
   esac
@@ -109,8 +109,9 @@ if [ "$all_commits" -eq "0" ]; then
     commit_datetime=`cd "$dir" && git show -s --format=%ci`
     print_results "$matches" "$commit_hash" "$commit_datetime"
 else
+    current_branch=`cd "$dir" && git rev-parse --abbrev-ref HEAD`
     # Perform a search for all commits.
-    for commit_hash in $(cd "$dir" && git rev-list --all)
+    for commit_hash in $(cd "$dir" && git rev-list $current_branch --)
     do
         matches=`cd "$dir" && git grep --color=always --recursive --ignore-case -E "$pattern" $commit_hash`
         commit_datetime=`cd "$dir" && git show -s --format=%ci $commit_hash`
